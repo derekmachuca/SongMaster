@@ -12,6 +12,7 @@
 	prompt2: .asciiz "Press X if would you like to play again? or Press Z if you would like to quit"
 	prompt3: .asciiz "Press M if you would like a hint, Press any other button if you think you can handle the challenge!"
 	space: .asciiz "x"
+	sorry: .asciiz "Sorry not hint for this one! A true music god doesnt need one" 
 	z: .asciiz "z"
 	m: .asciiz "m"
 	m2: .asciiz "m/n"
@@ -161,7 +162,13 @@
 	beq $s0, 1, rapAsk2 #if statements for  Which questions
 	
 	rapAsk1:
-	#print the Awnser Key
+	li $v0, 4	#prints the song title question
+	la $a0, question
+	syscall
+	li $v0, 4 
+	la $a0, return2
+	syscall	
+			#print the Awnser Key
 	li $v0, 4
 	la $a0, answerkey_rap
 	syscall
@@ -169,12 +176,6 @@
 	la $a0, return
 	syscall	
 	
-	li $v0, 4	#prints the song title question
-	la $a0, question
-	syscall
-	li $v0, 4 
-	la $a0, return
-	syscall		
 	
 	beq $s1, 0, rap1 #if statements for songs
 	beq $s1, 1, rap2
@@ -225,7 +226,7 @@
 	la $a0, return2  
 	syscall
 
-	lb $t3, c
+	lb $t3, b
 	lb $t4, m
 	beq $t2, $t4, thinkin
 	beq $t2, $t3, rap_rightAwnser
@@ -267,6 +268,7 @@
 	la $a0, text
 	syscall
 	
+	decoy4:
 	li $v0, 12 	#Reads in Character
 	syscall 
 	la $t2, ($v0)
@@ -275,6 +277,8 @@
 	syscall
 	
 	lb $t3, d
+	lb $t4, m
+	beq $t2, $t4, letsstay
 	beq $t2, $t3, rap_rightAwnser
 	bne $t2, $t3, rap_wrongAwnser
 #-------------------------------------------------
@@ -307,15 +311,13 @@
 	li $v0, 4	#Prompt for the question
 	la $a0, text2
 	syscall
-	li $v0, 4	#HINT
-	la $a0, question
-	syscall
 	li $v0, 12 	#Reads in Character
 	syscall 
 	la $t2, ($v0)
 	li $v0, 4 
 	la $a0, return2  
-	syscall		
+	syscall	
+	
 	lb $t4, m
 	beq $t2, $t4, runaway 
 	bne $t2, $t4, decoy1.2
@@ -331,7 +333,7 @@
 	syscall
 	
 	lb $t4, m2 
-	la $a1, ff
+	la $a1, bb
 	move $a0, $t2
 	jal compare_strings
 	beqz  $t4, rap_rightAwnser
@@ -352,9 +354,6 @@
 	syscall		
 	li $v0, 4	#Prompt for the question
 	la $a0, text2
-	syscall
-	li $v0, 4	#HINT
-	la $a0, question
 	syscall
 	li $v0, 12 	#Reads in Character
 	syscall 
@@ -377,7 +376,7 @@
 	syscall
 	
 	lb $t4, m2 
-	la $a1, ff
+	la $a1, ee
 	move $a0, $t2
 	jal compare_strings
 	beqz  $t4, rap_rightAwnser
@@ -398,9 +397,6 @@
 	syscall		
 	li $v0, 4	#Prompt for the question
 	la $a0, text2
-	syscall
-	li $v0, 4	#HINT
-	la $a0, question
 	syscall
 	li $v0, 12 	#Reads in Character
 	syscall 
@@ -429,7 +425,13 @@
 	beqz  $t4, rap_rightAwnser
 	j  rap_wrongAwnser
 	
-	rap4.2:		#print Thinkin Bout You 
+	rap4.2:		#print lets stay together
+	li $v0, 4 
+	la $a0, prompt3
+	syscall
+	li $v0, 4 
+	la $a0, return  
+	syscall	
 	li $v0, 4
 	la $a0, rap_lyric4
 	syscall
@@ -439,7 +441,17 @@
 	li $v0, 4	#Prompt for the question
 	la $a0, text2
 	syscall
+	li $v0, 12 	#Reads in Character
+	syscall 
+	la $t2, ($v0)
+	li $v0, 4 
+	la $a0, return2  
+	syscall		
+	lb $t4, m
+	beq $t2, $t4, letsstay 
+	bne $t2, $t4, decoy4.2
 	
+	decoy4.2:
 	li $v0, 8
 	li $a1, 100000  	#Reads in String
 	la $a0, artist_guess
@@ -449,6 +461,7 @@
 	la $a0, return2  
 	syscall
 	
+	lb $t4, m2 
 	la $a1, gg
 	move $a0, $t2
 	jal compare_strings
@@ -470,17 +483,17 @@
 	beq $s0, 1, classicAsk2 #if statements for  Which questions
 	
 	classicAsk1:
-	#print the Awnser Key
-	li $v0, 4
-	la $a0, answerkey_classics
-	syscall
-	
 	li $v0, 4	#prints the song title question
 	la $a0, question
 	syscall
 	li $v0, 4 
-	la $a0, return
-	syscall		
+	la $a0, return2
+	syscall	
+			#print the Awnser Key
+	li $v0, 4
+	la $a0, answerkey_classics
+	syscall
+	
 	
 	beq $s1, 0, classic1 #if statements for songs
 	beq $s1, 1, classic2
@@ -509,8 +522,8 @@
 	lb $t3, a
 	lb $t4, m
 	beq $t2, $t4, virgin
-	beq $t2, $t3, rap_rightAwnser
-	bne $t2, $t3, rap_wrongAwnser
+	beq $t2, $t3, classic_rightAwnser
+	bne $t2, $t3, classic_wrongAwnser
 	
 	
 	classic2:		#Print We Belong Together
@@ -524,6 +537,7 @@
 	la $a0, text
 	syscall
 	
+	decoy2C:
 	li $v0, 12 	#Reads in Character
 	syscall 
 	la $t2, ($v0)
@@ -532,8 +546,11 @@
 	syscall
 	
 	lb $t3, b
+	lb $t4, m
+	beq $t2, $t4, belong
 	beq $t2, $t3, classic_rightAwnser
 	bne $t2, $t3, classic_wrongAwnser
+	
 	
 	classic3:		#Print No Scrubs
 	li $v0, 4
@@ -546,6 +563,7 @@
 	la $a0, text
 	syscall
 	
+	decoy3C:
 	li $v0, 12 	#Reads in Character
 	syscall 
 	la $t2, ($v0)
@@ -554,6 +572,8 @@
 	syscall
 	
 	lb $t3, c
+	lb $t4, m
+	beq $t2, $t4, scrubs
 	beq $t2, $t3, classic_rightAwnser
 	bne $t2, $t3, classic_wrongAwnser
 	
@@ -568,6 +588,7 @@
 	la $a0, text
 	syscall
 	
+	decoy4C:
 	li $v0, 12 	#Reads in Character
 	syscall 
 	la $t2, ($v0)
@@ -576,6 +597,8 @@
 	syscall
 	
 	lb $t3, d
+	lb $t4, m
+	beq $t2, $t4, dani
 	beq $t2, $t3, classic_rightAwnser
 	bne $t2, $t3, classic_wrongAwnser
 #------------------------------------------------------------------------------------------
@@ -608,9 +631,6 @@
 	li $v0, 4	#Prompt for the question
 	la $a0, text2
 	syscall
-	li $v0, 4	#HINT
-	la $a0, question
-	syscall
 	li $v0, 12 	#Reads in Character
 	syscall 
 	la $t2, ($v0)
@@ -640,16 +660,32 @@
 	
 	
 	classic2.2:		#Print We Belong Together
+	li $v0, 4 
+	la $a0, prompt3
+	syscall
+	li $v0, 4 
+	la $a0, return  
+	syscall	
 	li $v0, 4
 	la $a0, classic_lyric2
 	syscall
 	li $v0, 4 
-	la $a0, return 
+	la $a0, return  
 	syscall		
 	li $v0, 4	#Prompt for the question
 	la $a0, text2
 	syscall
+	li $v0, 12 	#Reads in Character
+	syscall 
+	la $t2, ($v0)
+	li $v0, 4 
+	la $a0, return2  
+	syscall		
+	lb $t4, m
+	beq $t2, $t4, belong 
+	bne $t2, $t4, decoy2C.2
 	
+	decoy2C.2:
 	li $v0, 8
 	li $a1, 100000  	#Reads in String
 	la $a0, artist_guess
@@ -659,7 +695,7 @@
 	la $a0, return2  
 	syscall
 	
-	
+	lb $t4, m2 
 	la $a1, dd
 	move $a0, $t2
 	jal compare_strings
@@ -667,16 +703,32 @@
 	j  classic_wrongAwnser
 	
 	classic3.2:		#Print No Scrubs 
+	li $v0, 4 
+	la $a0, prompt3
+	syscall
+	li $v0, 4 
+	la $a0, return  
+	syscall	
 	li $v0, 4
 	la $a0, classic_lyric3
 	syscall
 	li $v0, 4 
-	la $a0, return 
+	la $a0, return  
 	syscall		
 	li $v0, 4	#Prompt for the question
 	la $a0, text2
 	syscall
+	li $v0, 12 	#Reads in Character
+	syscall 
+	la $t2, ($v0)
+	li $v0, 4 
+	la $a0, return2  
+	syscall		
+	lb $t4, m
+	beq $t2, $t4, scrubs 
+	bne $t2, $t4, decoy3C.2
 	
+	decoy3C.2:
 	li $v0, 8
 	li $a1, 100000  	#Reads in String
 	la $a0, artist_guess
@@ -686,7 +738,7 @@
 	la $a0, return2  
 	syscall
 	
-	
+	lb $t4, m2 
 	la $a1, hh
 	move $a0, $t2
 	jal compare_strings
@@ -694,16 +746,40 @@
 	j  classic_wrongAwnser
 	
 	classic4.2:		#Print Dani California
+	li $v0, 4 
+	la $a0, prompt3
+	syscall
+	li $v0, 4 
+	la $a0, return  
+	syscall	
 	li $v0, 4
 	la $a0, classic_lyric4
 	syscall
 	li $v0, 4 
-	la $a0, return 
+	la $a0, return  
 	syscall		
 	li $v0, 4	#Prompt for the question
 	la $a0, text2
 	syscall
+	li $v0, 12 	#Reads in Character
+	syscall 
+	la $t2, ($v0)
+	li $v0, 4 
+	la $a0, return2  
+	syscall		
+	lb $t4, m
+	beq $t2, $t4, dani
+	bne $t2, $t4, decoy4C.2
 	
+	decoy4C.2:
+	li $v0, 8
+	li $a1, 100000  	#Reads in String
+	la $a0, artist_guess
+	syscall
+	la $t2, ($a0)
+	li $v0, 4 
+	la $a0, return2  
+	syscall
 	li $v0, 8
 	li $a1, 100000  	#Reads in String
 	la $a0, artist_guess
@@ -713,7 +789,7 @@
 	la $a0, return2  
 	syscall
 	
-	
+	lb $t4, m2 
 	la $a1, ii
 	move $a0, $t2
 	jal compare_strings
@@ -736,19 +812,18 @@
 	beq $s0, 1, hitAsk2 #if statements for  Which questions
 	
 	hitAsk1:
-	#print the Awnser Key
-	li $v0, 4
-	la $a0, answerkey_hits
-	syscall
-	li $v0, 4 
-	la $a0, return  
-	
 	li $v0, 4	#prints the song title question
 	la $a0, question
 	syscall
 	li $v0, 4 
-	la $a0, return
-	syscall		
+	la $a0, return2
+	syscall
+			#print the Awnser Key
+	li $v0, 4
+	la $a0, answerkey_hits
+	syscall
+	li $v0, 4 
+	la $a0, return 		
 	
 	beq $s1, 0, hit1 #if statements for songs
 	beq $s1, 1, hit2
@@ -766,6 +841,7 @@
 	la $a0, text
 	syscall
 	
+	decoy1H:
 	li $v0, 12 	#Reads in Character
 	syscall 
 	la $t2, ($v0)
@@ -774,6 +850,8 @@
 	syscall
 	
 	lb $t3, a
+	lb $t4, m
+	beq $t2, $t4, bbhmm
 	beq $t2, $t3, hit_rightAwnser
 	bne $t2, $t3, hit_wrongAwnser
 	
@@ -788,6 +866,7 @@
 	la $a0, text
 	syscall
 	
+	decoy2H:
 	li $v0, 12 	#Reads in Character
 	syscall 
 	la $t2, ($v0)
@@ -796,6 +875,8 @@
 	syscall
 	
 	lb $t3, b
+	lb $t4, m
+	beq $t2, $t4, redbone
 	beq $t2, $t3, hit_rightAwnser
 	bne $t2, $t3, hit_wrongAwnser
 	
@@ -810,6 +891,7 @@
 	la $a0, text
 	syscall
 	
+	decoy3H:
 	li $v0, 12 	#Reads in Character
 	syscall 
 	la $t2, ($v0)
@@ -818,6 +900,8 @@
 	syscall
 	
 	lb $t3, c
+	lb $t4, m
+	beq $t2, $t4, lovegalore
 	beq $t2, $t3, hit_rightAwnser
 	bne $t2, $t3, hit_wrongAwnser
 	
@@ -832,6 +916,7 @@
 	la $a0, text
 	syscall
 	
+	decoy4H:
 	li $v0, 12 	#Reads in Character
 	syscall 
 	la $t2, ($v0)
@@ -840,6 +925,8 @@
 	syscall
 	
 	lb $t3, d
+	lb $t4, m
+	beq $t2, $t4, starboy
 	beq $t2, $t3, hit_rightAwnser
 	bne $t2, $t3, hit_wrongAwnser
 #-----------------------------------------------------------------------------------------------
@@ -858,6 +945,12 @@
 	
 	
 	hit1.2:		#print BBHMM
+	li $v0, 4 
+	la $a0, prompt3
+	syscall
+	li $v0, 4 
+	la $a0, return  
+	syscall	
 	li $v0, 4
 	la $a0, hit_lyric1
 	syscall
@@ -867,7 +960,17 @@
 	li $v0, 4	#Prompt for the question
 	la $a0, text2
 	syscall
+	li $v0, 12 	#Reads in Character
+	syscall 
+	la $t2, ($v0)
+	li $v0, 4 
+	la $a0, return2  
+	syscall	
+	lb $t4, m
+	beq $t2, $t4, bbhmm
+	bne $t2, $t4, decoy1H.2
 	
+	decoy1H.2:
 	li $v0, 8
 	li $a1, 100000  	#Reads in String
 	la $a0, artist_guess
@@ -877,6 +980,7 @@
 	la $a0, return2  
 	syscall
 	
+	lb $t4, m2
 	la $a1, aa
 	move $a0, $t2
 	jal compare_strings
@@ -884,6 +988,12 @@
 	j  hit_wrongAwnser
 	
 	hit2.2:		#print Redbone
+	li $v0, 4 
+	la $a0, prompt3
+	syscall
+	li $v0, 4 
+	la $a0, return  
+	syscall	
 	li $v0, 4
 	la $a0, hit_lyric2
 	syscall
@@ -893,7 +1003,17 @@
 	li $v0, 4	#Prompt for the question
 	la $a0, text2
 	syscall
+	li $v0, 12 	#Reads in Character
+	syscall 
+	la $t2, ($v0)
+	li $v0, 4 
+	la $a0, return2  
+	syscall	
+	lb $t4, m
+	beq $t2, $t4, redbone
+	bne $t2, $t4, decoy2H.2
 	
+	decoy2H.2:
 	li $v0, 8
 	li $a1, 100000  	#Reads in String
 	la $a0, artist_guess
@@ -903,6 +1023,7 @@
 	la $a0, return2  
 	syscall
 	
+	lb $t4, m2
 	la $a1, jj
 	move $a0, $t2
 	jal compare_strings
@@ -910,6 +1031,12 @@
 	j  hit_wrongAwnser
 	
 	hit3.2:		#print Love Galore
+	li $v0, 4 
+	la $a0, prompt3
+	syscall
+	li $v0, 4 
+	la $a0, return  
+	syscall	
 	li $v0, 4
 	la $a0, hit_lyric3
 	syscall
@@ -919,7 +1046,17 @@
 	li $v0, 4	#Prompt for the question
 	la $a0, text2
 	syscall
+	li $v0, 12 	#Reads in Character
+	syscall 
+	la $t2, ($v0)
+	li $v0, 4 
+	la $a0, return2  
+	syscall	
+	lb $t4, m
+	beq $t2, $t4, lovegalore
+	bne $t2, $t4, decoy3H.2
 	
+	decoy3H.2:
 	li $v0, 8
 	li $a1, 100000  	#Reads in String
 	la $a0, artist_guess
@@ -929,6 +1066,7 @@
 	la $a0, return2  
 	syscall
 	
+	lb $t4, m2
 	la $a1, kk
 	move $a0, $t2
 	jal compare_strings
@@ -936,6 +1074,12 @@
 	j  hit_wrongAwnser
 	
 	hit4.2:		#print Starboy
+	li $v0, 4 
+	la $a0, prompt3
+	syscall
+	li $v0, 4 
+	la $a0, return  
+	syscall	
 	li $v0, 4
 	la $a0, hit_lyric4
 	syscall
@@ -945,7 +1089,17 @@
 	li $v0, 4	#Prompt for the question
 	la $a0, text2
 	syscall
+	li $v0, 12 	#Reads in Character
+	syscall 
+	la $t2, ($v0)
+	li $v0, 4 
+	la $a0, return2  
+	syscall	
+	lb $t4, m
+	beq $t2, $t4, starboy
+	bne $t2, $t4, decoy4H.2
 	
+	decoy4H.2:
 	li $v0, 8
 	li $a1, 100000  	#Reads in String
 	la $a0, artist_guess
@@ -955,6 +1109,7 @@
 	la $a0, return2  
 	syscall
 	
+	lb $t4, m2
 	la $a1, mm
 	move $a0, $t2
 	jal compare_strings
@@ -1883,5 +2038,499 @@
   	syscall
   	beq $s0, 0, decoy1C	#JUMP BACK TO PRIMPT
   	beq $s0, 1, decoy1C.2
+  	
+  	belong:		######## WE BELONG TOGETHER
+  	li $a0, 69
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 81
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall 
+  	li $a0, 71
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 83
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 72
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 84
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall 
+  	li $a0, 74
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 86
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 88
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 84
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 81
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 76
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 84
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 81
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 88
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 84
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 81
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 76
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 86
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 83
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 78
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 74
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 83
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 78
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 86
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 83
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 78
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 74
+  	li $a1, 250 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 84
+  	li $a1, 300
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 81
+  	li $a1, 300 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 77
+  	li $a1, 300 
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 31
+  	syscall
+  	li $a0, 72
+  	li $a1, 300
+  	li $a2, 1#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	beq $s0, 0, decoy2C	#JUMP BACK TO PRIMPT
+  	beq $s0, 1, decoy2C.2
+  	
+  	lovegalore:
+  	li $a0, 57
+  	li $a1, 600
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 52
+  	li $a1, 600 
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 41
+  	li $a1, 500 
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 57
+  	li $a1, 600
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 52
+  	li $a1, 600 
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 41
+  	li $a1, 500 
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 57
+  	li $a1, 600
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 52
+  	li $a1, 600 
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 41
+  	li $a1, 500 
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 57
+  	li $a1, 600
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 52
+  	li $a1, 600 
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 41
+  	li $a1, 500 
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall	
+  	li $a0, 52
+  	li $a1, 600
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 47
+  	li $a1, 600
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 36
+  	li $a1, 500 
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 52
+  	li $a1, 600
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 47
+  	li $a1, 600
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 36
+  	li $a1, 500 
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 52
+  	li $a1, 600
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 47
+  	li $a1, 600
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 36
+  	li $a1, 500 
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 52
+  	li $a1, 600
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 47
+  	li $a1, 600
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 36
+  	li $a1, 500 
+  	li $a2, 63#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	beq $s0, 0, decoy3H	#JUMP BACK TO PRIMPT
+  	beq $s0, 1, decoy3H.2
+  	
+  	letsstay:
+  	li $v0, 4
+	la $a0, sorry
+	syscall
+	li $v0, 4 
+	la $a0, return
+	beq $s0, 0, decoy4	#JUMP BACK TO PRIMPT
+  	beq $s0, 1, decoy4.2
+  	
+  	starboy:
+  	li $v0, 4
+	la $a0, sorry
+	syscall
+	li $v0, 4 
+	la $a0, return
+	beq $s0, 0, decoy4H	#JUMP BACK TO PRIMPT
+  	beq $s0, 1, decoy4H.2
+  	
+  	redbone:
+  	li $a0, 70
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 68
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 66
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 65
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 61
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 58
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 63
+  	li $a1, 600
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 61
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 63
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 66
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 73
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 70
+  	li $a1, 600
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 65
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 66
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 68
+  	li $a1, 300
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	li $a0, 66
+  	li $a1, 650
+  	li $a2, 32#
+ 	li $a3, 127
+ 	la $v0, 33
+  	syscall
+  	beq $s0, 0, decoy2H	#JUMP BACK TO PRIMPT
+  	beq $s0, 1, decoy2H.2
+  	
+  	scrubs:
+  	li $v0, 4
+	la $a0, sorry
+	syscall
+	li $v0, 4 
+	la $a0, return
+	beq $s0, 0, decoy3C	#JUMP BACK TO PRIMPT
+  	beq $s0, 1, decoy3C.2
+  	
+  	dani:
+  	li $v0, 4
+	la $a0, sorry
+	syscall
+	li $v0, 4 
+	la $a0, return
+	beq $s0, 0, decoy4C	#JUMP BACK TO PRIMPT
+  	beq $s0, 1, decoy4C.2
+  	
+  	bbhmm:
+  	li $v0, 4
+	la $a0, sorry
+	syscall
+	li $v0, 4 
+	la $a0, return
+	beq $s0, 0, decoy1H	#JUMP BACK TO PRIMPT
+  	beq $s0, 1, decoy1H.2
+  	
+  	
+  	
+  	
+  	
 
 	
